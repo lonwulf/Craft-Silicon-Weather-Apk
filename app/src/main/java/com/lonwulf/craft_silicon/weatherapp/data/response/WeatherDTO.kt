@@ -4,12 +4,29 @@ import com.squareup.moshi.Json
 
 
 data class WeatherDTO(
-    @Json(name = "location")
-    var location: Location? = null,
-
-    @Json(name = "current")
-    var current: Current? = null
+    @Json(name = "cod") var cod: String? = null,
+    @Json(name = "message") var message: Int? = null,
+    @Json(name = "cnt") var cnt: Int? = null,
+    @Json(name = "list") var list: MutableList<com.example.List?>? = null,
+    @Json(name = "city") var city: City? = null
 ) {
+    data class City(
+        @Json(name = "id") var id: Int? = null,
+        @Json(name = "name") var name: String? = null,
+        @Json(name = "coord") var coord: Coord? = null,
+        @Json(name = "country") var country: String? = null,
+        @Json(name = "population") var population: Int? = null,
+        @Json(name = "timezone") var timezone: Int? = null,
+        @Json(name = "sunrise") var sunrise: Int? = null,
+        @Json(name = "sunset") var sunset: Int? = null
+    ) {
+        data class Coord(
+            @Json(name = "lat") var lat: Double? = null,
+            @Json(name = "lon") var lon: Double? = null
+        ) {
+        }
+    }
+
     data class Location(
         @Json(name = "name")
         var name: String? = null,
