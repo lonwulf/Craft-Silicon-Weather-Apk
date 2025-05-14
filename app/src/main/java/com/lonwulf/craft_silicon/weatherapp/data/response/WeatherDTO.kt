@@ -4,125 +4,75 @@ import com.squareup.moshi.Json
 
 
 data class WeatherDTO(
-    @Json(name = "cod") var cod: String? = null,
-    @Json(name = "message") var message: Int? = null,
-    @Json(name = "cnt") var cnt: Int? = null,
-    @Json(name = "list") var list: MutableList<com.example.List?>? = null,
-    @Json(name = "city") var city: City? = null
+    @Json(name = "cod") var cod: String = "",
+    @Json(name = "message") var message: Int = 0,
+    @Json(name = "cnt") var cnt: Int = 0,
+    @Json(name = "list") var list: Array<WeatherListDTO> = emptyArray(),
+    @Json(name = "city") var city: CityDTO? = null
 ) {
-    data class City(
-        @Json(name = "id") var id: Int? = null,
-        @Json(name = "name") var name: String? = null,
-        @Json(name = "coord") var coord: Coord? = null,
-        @Json(name = "country") var country: String? = null,
-        @Json(name = "population") var population: Int? = null,
-        @Json(name = "timezone") var timezone: Int? = null,
-        @Json(name = "sunrise") var sunrise: Int? = null,
-        @Json(name = "sunset") var sunset: Int? = null
+    data class WeatherListDTO(
+        @Json(name = "dt") var dt: Int = 0,
+        @Json(name = "main") var main: MainDTO? = null,
+        @Json(name = "weather") var weather: Array<WeatherObjDTO> = emptyArray(),
+        @Json(name = "clouds") var clouds: CloudsDTO? = null,
+        @Json(name = "wind") var wind: WindDTO? = null,
+        @Json(name = "visibility") var visibility: Int = 0,
+        @Json(name = "pop") var pop: Int = 0,
+        @Json(name = "sys") var sys: SysDTO? = null,
+        @Json(name = "dt_txt") var dt_txt: String = "",
+        @Json(name = "rain") var rain: RainDTO? = null
     ) {
-        data class Coord(
-            @Json(name = "lat") var lat: Double? = null,
-            @Json(name = "lon") var lon: Double? = null
-        ) {
-        }
+        data class CloudsDTO(
+            @Json(name = "all") var all: Int = 0
+        )
+
+        data class WindDTO(
+            @Json(name = "speed") var speed: Double = 0.0,
+            @Json(name = "deg") var deg: Int = 0,
+            @Json(name = "gust") var gust: Double = 0.0
+        )
+
+        data class WeatherObjDTO(
+            @Json(name = "id") var id: Int = 0,
+            @Json(name = "main") var main: String = "",
+            @Json(name = "description") var description: String = "",
+            @Json(name = "icon") var icon: String = ""
+        )
+
+        data class SysDTO(
+            @Json(name = "pod") var pod: String = ""
+        )
+
+        data class RainDTO(
+            @Json(name = "3h") var _3h: Double = 0.0
+        )
+
+        data class MainDTO(
+            @Json(name = "temp") var temp: Double = 0.0,
+            @Json(name = "feels_like") var feels_like: Double = 0.0,
+            @Json(name = "temp_min") var temp_min: Double = 0.0,
+            @Json(name = "temp_max") var temp_max: Double = 0.0,
+            @Json(name = "pressure") var pressure: Int = 0,
+            @Json(name = "sea_level") var sea_level: Int = 0,
+            @Json(name = "grnd_level") var grnd_level: Int = 0,
+            @Json(name = "humidity") var humidity: Int = 0,
+            @Json(name = "temp_kf") var temp_kf: Int = 0
+        )
     }
 
-    data class Location(
-        @Json(name = "name")
-        var name: String? = null,
-
-        @Json(name = "region")
-        var region: String? = null,
-
-        @Json(name = "country")
-        var country: String? = null,
-
-        @Json(name = "lat")
-        var lat: Double? = null,
-
-        @Json(name = "lon")
-        var lon: Double? = null,
-
-        @Json(name = "tz_id")
-        var tzId: String? = null,
-
-        @Json(name = "localtime_epoch")
-        var localtime_epoch: Int? = null,
-
-        @Json(name = "localtime")
-        var localtime: String? = null
-    )
-
-    data class Current(
-        @Json(name = "last_updated_epoch")
-        var lastUpdatedEpoch: Int? = null,
-
-        @Json(name = "last_updated")
-        var lastUpdated: String? = null,
-
-        @Json(name = "temp_c")
-        var temp_c: Double? = null,
-
-        @Json(name = "temp_f")
-        var temp_f: Double? = null,
-
-        @Json(name = "is_day")
-        var is_day: Int? = null,
-
-        @Json(name = "condition")
-        var condition: Condition? = null,
-
-        @Json(name = "wind_kph")
-        var wind_kph: Double? = null,
-
-        @Json(name = "wind_dir")
-        var windDir: String? = null,
-
-        @Json(name = "pressure_in")
-        var pressure_in: Double? = null,
-
-        @Json(name = "precip_mm")
-        var precip_mm: Double? = null,
-
-        @Json(name = "precip_in")
-        var precip_in: Double? = null,
-
-        @Json(name = "humidity")
-        var humidity: Int? = null,
-
-        @Json(name = "cloud")
-        var cloud: Int? = null,
-
-        @Json(name = "feelslike_c")
-        var feelslike_c: Double? = null,
-
-        @Json(name = "windchill_c")
-        var windchill_c: Double? = null,
-
-        @Json(name = "heatindex_c")
-        var heatindex_c: Double? = null,
-
-        @Json(name = "dewpoint_c")
-        var dewpoint_c: Double? = null,
-
-        @Json(name = "vis_km")
-        var visKm: Double? = null,
-
-        @Json(name = "gust_kph")
-        var gust_kph: Double? = null,
-
-        @Json(name = "uv")
-        var uv: Double? = null
+    data class CityDTO(
+        @Json(name = "id") var id: Int = 0,
+        @Json(name = "name") var name: String = "",
+        @Json(name = "coord") var coord: CoordDTO? = null,
+        @Json(name = "country") var country: String = "",
+        @Json(name = "population") var population: Int = 0,
+        @Json(name = "timezone") var timezone: Int = 0,
+        @Json(name = "sunrise") var sunrise: Int = 0,
+        @Json(name = "sunset") var sunset: Int = 0
     ) {
-        class Condition {
-            @Json(name = "text")
-            var text: String? = null
-
-            @Json(name = "icon")
-            var icon: String? = null
-
-            @Json(name = "code")
-            var code: Double? = null
-        }
+        data class CoordDTO(
+            @Json(name = "lat") var lat: Double = 0.0,
+            @Json(name = "lon") var lon: Double = 0.0
+        )
     }
 }
