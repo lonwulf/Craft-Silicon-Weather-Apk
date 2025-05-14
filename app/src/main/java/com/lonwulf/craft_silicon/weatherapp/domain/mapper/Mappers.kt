@@ -2,6 +2,7 @@ package com.lonwulf.craft_silicon.weatherapp.domain.mapper
 
 import com.lonwulf.craft_silicon.weatherapp.data.response.WeatherDTO
 import com.lonwulf.craft_silicon.weatherapp.domain.model.WeatherModel
+import com.lonwulf.craft_silicon.weatherapp.domain.model.WeatherPreferences
 
 fun WeatherDTO.toDomainModel(): WeatherModel =
     WeatherModel(
@@ -55,6 +56,20 @@ private fun Array<WeatherDTO.WeatherListDTO.WeatherObjDTO>.toWeatherDomain(): Li
         this@toWeatherDomain.map {
             add(
                 WeatherModel.WeatherList.Weather(
+                    id = it.id,
+                    main = it.main,
+                    description = it.description,
+                    icon = it.icon
+                )
+            )
+        }
+    }
+
+fun List<WeatherModel.WeatherList.Weather>.toWeatherPreferenceList(): List<WeatherPreferences> =
+    mutableListOf<WeatherPreferences>().apply {
+        this@toWeatherPreferenceList.map {
+            add(
+                WeatherPreferences(
                     id = it.id,
                     main = it.main,
                     description = it.description,

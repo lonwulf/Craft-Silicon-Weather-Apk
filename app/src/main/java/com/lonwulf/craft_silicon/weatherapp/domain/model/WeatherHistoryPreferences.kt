@@ -52,11 +52,8 @@ data class WeatherHistoryPreferences(
 
 @Serializable
 data class WeatherPreferences(
-    val windSpeed: Double,
-    val humidity: Int,
-    val temp: Double,
-    val feelsLike: Double,
-    val visibility: Int,
-    val tempMin: Double,
-    val tempMax: Double,
+    val id: Int,
+    val main: String,
+    val description: String,
+    val icon: String
 )

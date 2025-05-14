@@ -3,10 +3,12 @@ package com.lonwulf.craft_silicon.weatherapp.ui.viewmodel
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.lonwulf.craft_silicon.weatherapp.core.util.GenericResultState
+import com.lonwulf.craft_silicon.weatherapp.domain.mapper.toWeatherPreferenceList
 import com.lonwulf.craft_silicon.weatherapp.domain.model.WeatherHistoryPreferences
 import com.lonwulf.craft_silicon.weatherapp.domain.model.WeatherModel
 import com.lonwulf.craft_silicon.weatherapp.domain.usecase.FetchHistoryFromCacheUseCase
 import com.lonwulf.craft_silicon.weatherapp.domain.usecase.WeatherForeCastUseCase
+import kotlinx.collections.immutable.toPersistentList
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -52,16 +54,17 @@ class SharedViewModel(
         fetchHistoryFromCacheUseCase.clearHistory()
     }
 
-    fun addWeatherHistory(model: WeatherModel) = viewModelScope.launch(Dispatchers.IO) {
+    fun addWeatherHistory(model: WeatherModel.WeatherList) = viewModelScope.launch(Dispatchers.IO) {
         fetchHistoryFromCacheUseCase.addHistory(
             WeatherHistoryPreferences(
-                name = model.name ?: "",
-                humidity = model.humidity ?: 0,
-                temp = model.tempC ?: 0.0,
-                iconUrl = model.iconUrl ?: "",
-                feelsLike = model.feelsLike ?: 0.0,
-                condition = model.condition ?: "",
-                uv = model.uv ?: 0.0
+                windSpeed = model.windSpeed,
+                humidity = model.humidity,
+                temp = model.temp,
+                visibility = model.visibility,
+                feelsLike = model.feelsLike,
+                tempMax = model.tempMax,
+                tempMin = model.tempMin,
+                weather = model.weather.toWeatherPreferenceList().toPersistentList()
             )
         )
     }

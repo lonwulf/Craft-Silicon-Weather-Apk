@@ -144,7 +144,7 @@ fun SearchScreen(
                                 start.linkTo(parent.start, margin = 5.dp)
                             })
                     }
-                    model.tempC?.let {
+                    model.temp?.let {
                         Text(
                             style = MaterialTheme.typography.displayMedium,
                             text = "$it °",
