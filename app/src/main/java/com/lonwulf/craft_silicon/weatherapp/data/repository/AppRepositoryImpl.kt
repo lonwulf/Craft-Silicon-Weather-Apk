@@ -9,9 +9,14 @@ import kotlinx.coroutines.Dispatchers
 
 class AppRepositoryImpl(private val source: AppRemoteDataSource) : AppRepository {
     override suspend fun getWeatherForeCast(
-        query: String
+        latitude: Double,
+        longitude: Double
     ): APIResult<WeatherModel> {
-        return when (val response = source.fetchWeatherForeCast(Dispatchers.IO, query)) {
+        return when (val response = source.fetchWeatherForeCast(
+            Dispatchers.IO,
+            latitude = latitude,
+            longitude = longitude
+        )) {
             is APIResult.Loading -> APIResult.Loading
             is APIResult.Success -> {
                 val result = response.result.toDomainModel()

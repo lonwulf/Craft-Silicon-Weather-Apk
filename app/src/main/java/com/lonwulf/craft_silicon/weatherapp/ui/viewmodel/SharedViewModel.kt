@@ -29,8 +29,11 @@ class SharedViewModel(
     val weatherPreferencesList
         get() = _weatherPreferencesList.asStateFlow()
 
-    fun fetchWeatherForeCast(query: String) = viewModelScope.launch(Dispatchers.IO) {
-        weatherForeCastUseCase(query).onStart {
+    fun fetchWeatherForeCast(
+        latitude: Double,
+        longitude: Double
+    ) = viewModelScope.launch(Dispatchers.IO) {
+        weatherForeCastUseCase(latitude = latitude, longitude = longitude).onStart {
             setWeatherForeCastApiResult(GenericResultState.Loading)
         }
             .flowOn(Dispatchers.IO).collect { result ->
