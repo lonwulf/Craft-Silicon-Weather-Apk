@@ -26,13 +26,14 @@ class DataStoreRepositoryImpl(private val context: Context) : DataStoreRepositor
             preferences.copy(history = preferences.history.mutate {
                 it.add(
                     WeatherHistoryPreferences(
-                        name = weatherItem.name,
+                        windSpeed = weatherItem.windSpeed,
                         humidity = weatherItem.humidity,
                         temp = weatherItem.temp,
-                        iconUrl = weatherItem.iconUrl,
+                        visibility = weatherItem.visibility,
                         feelsLike = weatherItem.feelsLike,
-                        condition = weatherItem.condition,
-                        uv = weatherItem.uv
+                        tempMax = weatherItem.tempMax,
+                        tempMin = weatherItem.tempMin,
+                        weather = weatherItem.weather,
                     )
                 )
             })
