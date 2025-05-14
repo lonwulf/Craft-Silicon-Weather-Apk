@@ -99,7 +99,7 @@ fun SearchScreen(
         }, onClick = {
 
         }, onSearch = {
-            vm.fetchWeatherForeCast(it)
+            vm.fetchWeatherForeCast(latitude = 44.34, longitude = 10.99)
         })
 
         weatherObject.takeIf { it != null }?.let { model ->
