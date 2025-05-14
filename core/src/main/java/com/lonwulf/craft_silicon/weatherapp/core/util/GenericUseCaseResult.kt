@@ -1,0 +1,6 @@
+package com.lonwulf.craft_silicon.weatherapp.core.util
+
+data class GenericUseCaseResult<out T>(
+    val result: T,
+    val isSuccessful: Boolean, val msg: String? = ""
+)
