@@ -25,20 +25,29 @@ open class PersistentListSerializer<T>(elementSerializer: KSerializer<T>) :
     }
 }
 
-class WeatherHistoryPersistentListSerializer :
-    PersistentListSerializer<WeatherHistoryPreferences>(WeatherHistoryPreferences.serializer())
-
 class WeatherListObjectPersistentListSerializer :
     PersistentListSerializer<WeatherPreferences>(WeatherPreferences.serializer())
 
+class WeatherDetailsListPersistentListSerializer :
+    PersistentListSerializer<WeatherDetailsPreferences>(WeatherDetailsPreferences.serializer())
+
+
 @Serializable
 data class AppSettings(
-    @Serializable(with = WeatherHistoryPersistentListSerializer::class)
-    val history: PersistentList<WeatherHistoryPreferences> = persistentListOf(),
+    val name: String = "",
+    val lat: Double = 0.0,
+    val lon: Double = 0.0,
+    val country: String = "",
+    val population: Int = 0,
+    val timezone: Int = 0,
+    val sunrise: Int = 0,
+    val sunset: Int = 0,
+    @Serializable(with = WeatherListObjectPersistentListSerializer::class)
+    val history: PersistentList<WeatherPreferences> = persistentListOf(),
 )
 
 @Serializable
-data class WeatherHistoryPreferences(
+data class WeatherPreferences(
     val windSpeed: Double,
     val humidity: Int,
     val temp: Double,
@@ -46,12 +55,13 @@ data class WeatherHistoryPreferences(
     val visibility: Int,
     val tempMin: Double,
     val tempMax: Double,
-    @Serializable(with = WeatherListObjectPersistentListSerializer::class)
-    val weather: PersistentList<WeatherPreferences> = persistentListOf()
+    val pressure:Int,
+    @Serializable(with = WeatherDetailsListPersistentListSerializer::class)
+    val weatherDetails: PersistentList<WeatherDetailsPreferences> = persistentListOf()
 )
 
 @Serializable
-data class WeatherPreferences(
+data class WeatherDetailsPreferences(
     val id: Int,
     val main: String,
     val description: String,

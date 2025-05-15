@@ -4,8 +4,10 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.lonwulf.craft_silicon.weatherapp.core.util.GenericResultState
 import com.lonwulf.craft_silicon.weatherapp.domain.mapper.toWeatherPreferenceList
+import com.lonwulf.craft_silicon.weatherapp.domain.model.AppSettings
 import com.lonwulf.craft_silicon.weatherapp.domain.model.WeatherHistoryPreferences
 import com.lonwulf.craft_silicon.weatherapp.domain.model.WeatherModel
+import com.lonwulf.craft_silicon.weatherapp.domain.model.WeatherPreferences
 import com.lonwulf.craft_silicon.weatherapp.domain.usecase.FetchHistoryFromCacheUseCase
 import com.lonwulf.craft_silicon.weatherapp.domain.usecase.WeatherForeCastUseCase
 import kotlinx.collections.immutable.toPersistentList
@@ -25,9 +27,13 @@ class SharedViewModel(
     val weatherForeCastStateFlow
         get() = _weatherForeCastStateFlow.asStateFlow()
     private var _weatherPreferencesList =
-        MutableStateFlow<GenericResultState<List<WeatherHistoryPreferences>>>(GenericResultState.Loading)
+        MutableStateFlow<GenericResultState<List<WeatherPreferences>>>(GenericResultState.Loading)
+    private var _appSettingsPreference =
+        MutableStateFlow<GenericResultState<AppSettings>>(GenericResultState.Loading)
     val weatherPreferencesList
         get() = _weatherPreferencesList.asStateFlow()
+    val appSettingsPreference
+        get() = _appSettingsPreference.asStateFlow()
 
     fun fetchWeatherForeCast(
         latitude: Double,
@@ -49,25 +55,35 @@ class SharedViewModel(
     fun fetchAllHistory() = viewModelScope.launch(Dispatchers.IO) {
         fetchHistoryFromCacheUseCase().onStart { setWeatherHistoryResult(GenericResultState.Loading) }
             .flowOn(Dispatchers.IO).collect {
-                setWeatherHistoryResult(GenericResultState.Success(it))
+                setWeatherHistoryResult(GenericResultState.Success())
             }
+    }
+
+    fun fetchWeatherSettings() = viewModelScope.launch(Dispatchers.IO) {
+        fetchHistoryFromCacheUseCase.fetchCachedWeatherSettings().onStart {
+            setAppSettingsResult(GenericResultState.Loading)
+        }.flowOn(Dispatchers.IO).collect {
+            setAppSettingsResult(GenericResultState.Success(it))
+        }
+
     }
 
     fun clearAllData() = viewModelScope.launch(Dispatchers.IO) {
         fetchHistoryFromCacheUseCase.clearHistory()
     }
 
-    fun addWeatherHistory(model: WeatherModel.WeatherList) = viewModelScope.launch(Dispatchers.IO) {
+    fun addWeatherHistory(model: WeatherModel) = viewModelScope.launch(Dispatchers.IO) {
         fetchHistoryFromCacheUseCase.addHistory(
             WeatherHistoryPreferences(
-                windSpeed = model.windSpeed,
-                humidity = model.humidity,
-                temp = model.temp,
-                visibility = model.visibility,
-                feelsLike = model.feelsLike,
-                tempMax = model.tempMax,
-                tempMin = model.tempMin,
-                weather = model.weather.toWeatherPreferenceList().toPersistentList()
+                name = model.name,
+                lat = model.lat,
+                lon = model.lon,
+                country = model.country,
+                population = model.population,
+                timezone = model.timezone,
+                sunset = model.sunset,
+                sunrise = model.sunrise,
+                weather = model.weatherList.toWeatherPreferenceList()
             )
         )
     }
@@ -77,7 +93,10 @@ class SharedViewModel(
         _weatherForeCastStateFlow.value = data
     }
 
-    private fun setWeatherHistoryResult(data: GenericResultState<List<WeatherHistoryPreferences>>) {
+    private fun setWeatherHistoryResult(data: GenericResultState<List<WeatherPreferences>>) {
         _weatherPreferencesList.value = data
+    }
+    private fun setAppSettingsResult(data: GenericResultState<AppSettings>) {
+        _appSettingsPreference.value = data
     }
 }

@@ -1,8 +1,11 @@
 package com.lonwulf.craft_silicon.weatherapp.domain.mapper
 
 import com.lonwulf.craft_silicon.weatherapp.data.response.WeatherDTO
+import com.lonwulf.craft_silicon.weatherapp.domain.model.WeatherDetailsPreferences
 import com.lonwulf.craft_silicon.weatherapp.domain.model.WeatherModel
 import com.lonwulf.craft_silicon.weatherapp.domain.model.WeatherPreferences
+import kotlinx.collections.immutable.PersistentList
+import kotlinx.collections.immutable.toPersistentList
 
 fun WeatherDTO.toDomainModel(): WeatherModel =
     WeatherModel(
@@ -65,11 +68,62 @@ private fun Array<WeatherDTO.WeatherListDTO.WeatherObjDTO>.toWeatherDomain(): Li
         }
     }
 
-fun List<WeatherModel.WeatherList.Weather>.toWeatherPreferenceList(): List<WeatherPreferences> =
+fun List<WeatherModel.WeatherList>.toWeatherPreferenceList(): PersistentList<WeatherPreferences> =
     mutableListOf<WeatherPreferences>().apply {
         this@toWeatherPreferenceList.map {
             add(
                 WeatherPreferences(
+                    windSpeed = it.windSpeed,
+                    humidity = it.humidity,
+                    temp = it.temp,
+                    feelsLike = it.feelsLike,
+                    visibility = it.visibility,
+                    tempMax = it.tempMax,
+                    tempMin = it.tempMin,
+                    pressure = it.pressure,
+                    weatherDetails = it.weather.toWeatherDetailsPersistentList()
+                )
+            )
+        }
+    }.toPersistentList()
+
+private fun List<WeatherModel.WeatherList.Weather>.toWeatherDetailsPersistentList(): PersistentList<WeatherDetailsPreferences> =
+    mutableListOf<WeatherDetailsPreferences>().apply {
+        this@toWeatherDetailsPersistentList.map {
+            add(
+                WeatherDetailsPreferences(
+                    id = it.id,
+                    main = it.main,
+                    description = it.description,
+                    icon = it.icon
+                )
+            )
+        }
+    }.toPersistentList()
+
+fun PersistentList<WeatherPreferences>.toDomainWeatherModel(): List<WeatherModel.WeatherList> =
+    mutableListOf<WeatherModel.WeatherList>().apply {
+        this@toDomainWeatherModel.map {
+            add(
+                WeatherModel.WeatherList(
+                    humidity = it.humidity,
+                    visibility = it.visibility,
+                    feelsLike = it.feelsLike,
+                    tempMin = it.tempMin,
+                    tempMax = it.tempMax,
+                    windSpeed = it.windSpeed,
+                    pressure = it.pressure,
+                    weather = it.weatherDetails.toWeatherList()
+                )
+            )
+        }
+    }
+
+private fun PersistentList<WeatherDetailsPreferences>.toWeatherList(): List<WeatherModel.WeatherList.Weather> =
+    mutableListOf<WeatherModel.WeatherList.Weather>().apply {
+        this@toWeatherList.map {
+            add(
+                WeatherModel.WeatherList.Weather(
                     id = it.id,
                     main = it.main,
                     description = it.description,

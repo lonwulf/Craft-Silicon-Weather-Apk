@@ -26,7 +26,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
@@ -35,12 +34,12 @@ import androidx.constraintlayout.compose.Dimension
 import androidx.navigation.NavHostController
 import com.lonwulf.craft_silicon.weatherapp.R
 import com.lonwulf.craft_silicon.weatherapp.core.util.GenericResultState
-import com.lonwulf.craft_silicon.weatherapp.domain.model.WeatherHistoryPreferences
+import com.lonwulf.craft_silicon.weatherapp.domain.mapper.toDomainWeatherModel
+import com.lonwulf.craft_silicon.weatherapp.domain.model.AppSettings
 import com.lonwulf.craft_silicon.weatherapp.domain.model.WeatherModel
 import com.lonwulf.craft_silicon.weatherapp.navigation.Destinations
 import com.lonwulf.craft_silicon.weatherapp.navigation.NavComposable
 import com.lonwulf.craft_silicon.weatherapp.presentation.ui.CircularProgressBar
-import com.lonwulf.craft_silicon.weatherapp.presentation.ui.LoadImageFromUrl
 import com.lonwulf.craft_silicon.weatherapp.presentation.ui.SearchBar
 import com.lonwulf.craft_silicon.weatherapp.ui.theme.TextBlack
 import com.lonwulf.craft_silicon.weatherapp.ui.viewmodel.SharedViewModel
@@ -61,31 +60,35 @@ fun HomeScreen(
     navHostController: NavHostController,
     sharedViewModel: SharedViewModel = koinNavViewModel(),
 ) {
-    var preferenceList by remember { mutableStateOf<List<WeatherHistoryPreferences>>(emptyList()) }
-    val historyFetchState by sharedViewModel.weatherPreferencesList.collectAsState()
+    var preference by remember { mutableStateOf<AppSettings?>(null) }
+    val historyFetchState by sharedViewModel.appSettingsPreference.collectAsState()
     var isLoading by remember { mutableStateOf(false) }
 
     LaunchedEffect(Unit) {
-        sharedViewModel.fetchAllHistory()
+//        sharedViewModel.fetchAllHistory()
+        sharedViewModel.fetchWeatherSettings()
     }
 
     LaunchedEffect(historyFetchState) {
 
         when (historyFetchState) {
-            is GenericResultState.Loading ->  isLoading = true
+            is GenericResultState.Loading -> isLoading = true
             is GenericResultState.Empty -> {}
-            is GenericResultState.Error -> { isLoading = false}
+            is GenericResultState.Error -> {
+                isLoading = false
+            }
+
             is GenericResultState.Success -> {
                 isLoading = false
-                preferenceList =
-                    (historyFetchState as GenericResultState.Success<List<WeatherHistoryPreferences>>).result!!
+                preference =
+                    (historyFetchState as GenericResultState.Success<AppSettings>).result!!
             }
         }
     }
 
 
     ConstraintLayout(modifier = modifier.fillMaxSize()) {
-        val (searchField, degreeValue, placeholderTxt, img, locationText, arrowIcn, weatherTile) = createRefs()
+        val (searchField, name, placeholderTxt, img, country, arrowIcn, weatherTile) = createRefs()
         val horizontalGuide = createGuidelineFromBottom(0.4f)
 
         CircularProgressBar(isLoading)
@@ -99,40 +102,39 @@ fun HomeScreen(
             navHostController.navigate(Destinations.SearchScreen.route)
         }, onSearch = {})
 
-        val dataToDisplay = when {
-            preferenceList.isNotEmpty() -> {
-                preferenceList.last().let { pref ->
-                    WeatherModel(
-                        name = pref.name,
-                        tempC = pref.temp,
-                        humidity = pref.humidity,
-                        condition = pref.condition,
-                        feelsLike = pref.feelsLike,
-                        iconUrl = pref.iconUrl,
-                        uv = pref.uv
-                    )
-                }
+        val dataToDisplay =
+            preference.let { pref ->
+                WeatherModel(
+                    name = pref?.name ?: "",
+                    country = pref?.country ?: "",
+                    timezone = pref?.timezone ?: 0,
+                    sunset = pref?.sunset ?: 0,
+                    sunrise = pref?.sunrise ?: 0,
+                    population = pref?.population ?: 0,
+                    lat = pref?.lat ?: 0.0,
+                    lon = pref?.lon ?: 0.0,
+                    weatherList = pref?.history?.toDomainWeatherModel() ?: emptyList()
+                )
             }
-            else -> null
-        }
+
 
         dataToDisplay.takeIf { it != null }?.let {
-            LoadImageFromUrl(
-                url = "https:${it.iconUrl}",
-                ctx = LocalContext.current,
-                modifier = modifier
-                    .size(200.dp)
-                    .constrainAs(img) {
-                        end.linkTo(parent.end)
-                        start.linkTo(parent.start)
-                        bottom.linkTo(locationText.top, 20.dp)
-                    })
+//            LoadImageFromUrl(
+//                url = "https:${it.iconUrl}",
+//                ctx = LocalContext.current,
+//                modifier = modifier
+//                    .size(200.dp)
+//                    .constrainAs(img) {
+//                        end.linkTo(parent.end)
+//                        start.linkTo(parent.start)
+//                        bottom.linkTo(country.top, 20.dp)
+//                    })
 
             Text(
-                text = it.name.toString(),
+                text = it.country,
                 style = MaterialTheme.typography.headlineLarge,
-                modifier = modifier.constrainAs(locationText) {
-                    bottom.linkTo(degreeValue.top, margin = 10.dp)
+                modifier = modifier.constrainAs(country) {
+                    bottom.linkTo(name.top, margin = 10.dp)
                     start.linkTo(parent.start)
                     end.linkTo(parent.end)
                 })
@@ -142,14 +144,14 @@ fun HomeScreen(
                 modifier = modifier
                     .size(20.dp)
                     .constrainAs(arrowIcn) {
-                        start.linkTo(locationText.end, margin = 10.dp)
-                        top.linkTo(locationText.top)
-                        bottom.linkTo(locationText.bottom)
+                        start.linkTo(country.end, margin = 10.dp)
+                        top.linkTo(country.top)
+                        bottom.linkTo(country.bottom)
                     })
             Text(
-                text = it.tempC.toString().plus("°"),
+                text = it.name,
                 style = MaterialTheme.typography.displayLarge,
-                modifier = modifier.constrainAs(degreeValue) {
+                modifier = modifier.constrainAs(name) {
                     bottom.linkTo(horizontalGuide)
                     start.linkTo(parent.start)
                     end.linkTo(parent.end)
@@ -175,13 +177,15 @@ fun HomeScreen(
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     WeatherItem(
-                        label = stringResource(R.string.humidity), value = it.humidity.toString().plus("%")
+                        label = stringResource(R.string.timezone),
+                        value = it.timezone.toString().plus("%")
                     )
                     WeatherItem(
-                        label = stringResource(R.string.uv), value = it.uv.toString()
+                        label = stringResource(R.string.sunrise), value = it.sunrise.toString()
                     )
                     WeatherItem(
-                        label = stringResource(R.string.feels_like), value = it.feelsLike.toString().plus("°")
+                        label = stringResource(R.string.sunset),
+                        value = it.sunset.toString().plus("°")
                     )
                 }
             }

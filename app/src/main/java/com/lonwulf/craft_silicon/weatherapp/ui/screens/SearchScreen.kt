@@ -144,7 +144,7 @@ fun SearchScreen(
                                 start.linkTo(parent.start, margin = 5.dp)
                             })
                     }
-                    model.temp?.let {
+                    model.country?.let {
                         Text(
                             style = MaterialTheme.typography.displayMedium,
                             text = "$it °",
@@ -153,19 +153,19 @@ fun SearchScreen(
                                 start.linkTo(name.start)
                             })
                     }
-                    model.iconUrl?.let {
-                        LoadImageFromUrl(
-                            url = "https:$it",
-                            ctx = LocalContext.current,
-                            modifier = modifier
-                                .size(100.dp)
-                                .constrainAs(img) {
-                                    end.linkTo(checkIcn.start, 10.dp)
-                                    top.linkTo(name.top)
-                                    bottom.linkTo(temp.bottom)
-                                    height = Dimension.fillToConstraints
-                                })
-                    }
+//                    model.iconUrl?.let {
+//                        LoadImageFromUrl(
+//                            url = "https:$it",
+//                            ctx = LocalContext.current,
+//                            modifier = modifier
+//                                .size(100.dp)
+//                                .constrainAs(img) {
+//                                    end.linkTo(checkIcn.start, 10.dp)
+//                                    top.linkTo(name.top)
+//                                    bottom.linkTo(temp.bottom)
+//                                    height = Dimension.fillToConstraints
+//                                })
+//                    }
                     if (isClicked) {
                         Image(
                             painter = painterResource(com.lonwulf.craft_silicon.weatherapp.presentation.R.drawable.check_circle_52dp),

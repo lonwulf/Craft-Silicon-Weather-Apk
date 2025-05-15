@@ -6,7 +6,6 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -25,18 +24,15 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.constraintlayout.compose.ConstraintLayout
-import androidx.constraintlayout.compose.Dimension
 import androidx.navigation.NavHostController
 import com.lonwulf.craft_silicon.weatherapp.R
 import com.lonwulf.craft_silicon.weatherapp.core.util.GenericResultState
-import com.lonwulf.craft_silicon.weatherapp.domain.model.WeatherHistoryPreferences
+import com.lonwulf.craft_silicon.weatherapp.domain.model.AppSettings
 import com.lonwulf.craft_silicon.weatherapp.navigation.NavComposable
 import com.lonwulf.craft_silicon.weatherapp.navigation.TopLevelDestinations
-import com.lonwulf.craft_silicon.weatherapp.presentation.ui.LoadImageFromUrl
 import com.lonwulf.craft_silicon.weatherapp.ui.theme.BottomBarBgGray
 import com.lonwulf.craft_silicon.weatherapp.ui.theme.BottomBarSelectedColor
 import com.lonwulf.craft_silicon.weatherapp.ui.theme.TextBlack
@@ -59,8 +55,8 @@ fun HistoryScreen(modifier: Modifier = Modifier, navHostController: NavHostContr
     val parentEntry =
         remember { navHostController.getBackStackEntry(TopLevelDestinations.HomeScreen.route) }
     val vm = koinNavViewModel<SharedViewModel>(viewModelStoreOwner = parentEntry)
-    var preferenceList by remember { mutableStateOf<List<WeatherHistoryPreferences>>(emptyList()) }
-    val historyFetchState by vm.weatherPreferencesList.collectAsState()
+    var preference by remember { mutableStateOf<AppSettings?>(null) }
+    val historyFetchState by vm.appSettingsPreference.collectAsState()
 
 
     LaunchedEffect(Unit) {
@@ -72,19 +68,19 @@ fun HistoryScreen(modifier: Modifier = Modifier, navHostController: NavHostContr
             is GenericResultState.Empty -> {}
             is GenericResultState.Error -> {}
             is GenericResultState.Success -> {
-                preferenceList =
-                    (historyFetchState as GenericResultState.Success<List<WeatherHistoryPreferences>>).result!!
+                preference =
+                    (historyFetchState as GenericResultState.Success<AppSettings>).result!!
             }
         }
     }
-    preferenceList.takeIf { it.isNotEmpty() }?.let {
+    preference.takeIf { it != null }?.let {
         LazyColumn(
             modifier = modifier
                 .background(color = BottomBarBgGray)
                 .fillMaxSize()
                 .padding(10.dp)
         ) {
-            items(items = preferenceList.reversed()) { prefs ->
+            items(items = preference?.history?.reversed() ?: emptyList()) { prefs ->
                 ElevatedCard(
                     modifier = modifier
                         .fillMaxWidth()
@@ -105,31 +101,35 @@ fun HistoryScreen(modifier: Modifier = Modifier, navHostController: NavHostContr
                             .wrapContentHeight()
                     ) {
                         val (name, temp, feelsLike, img) = createRefs()
-                        Text(text = prefs.name, modifier = modifier.constrainAs(name) {
-                            top.linkTo(parent.top, margin = 10.dp)
-                            start.linkTo(parent.start, margin = 20.dp)
-                        })
-                        Text(text = "Temperature: ${prefs.temp}°", modifier = modifier.constrainAs(temp) {
-                            top.linkTo(name.bottom, margin = 10.dp)
-                            start.linkTo(parent.start, margin = 20.dp)
-                        })
+                        Text(
+                            text = "Humidity: ${prefs.humidity}",
+                            modifier = modifier.constrainAs(name) {
+                                top.linkTo(parent.top, margin = 10.dp)
+                                start.linkTo(parent.start, margin = 20.dp)
+                            })
+                        Text(
+                            text = "Temperature: ${prefs.temp}°",
+                            modifier = modifier.constrainAs(temp) {
+                                top.linkTo(name.bottom, margin = 10.dp)
+                                start.linkTo(parent.start, margin = 20.dp)
+                            })
                         Text(
                             text = "Feels Like: ${prefs.feelsLike}°",
                             modifier = modifier.constrainAs(feelsLike) {
                                 top.linkTo(temp.bottom, margin = 10.dp)
                                 start.linkTo(parent.start, margin = 20.dp)
                             })
-                        LoadImageFromUrl(
-                            url = "https:${prefs.iconUrl}",
-                            ctx = LocalContext.current,
-                            modifier = modifier
-                                .width(100.dp)
-                                .constrainAs(img) {
-                                    end.linkTo(parent.end, margin = 5.dp)
-                                    top.linkTo(name.top)
-                                    bottom.linkTo(feelsLike.bottom)
-                                    height = Dimension.fillToConstraints
-                                })
+//                        LoadImageFromUrl(
+//                            url = "https:${prefs.iconUrl}",
+//                            ctx = LocalContext.current,
+//                            modifier = modifier
+//                                .width(100.dp)
+//                                .constrainAs(img) {
+//                                    end.linkTo(parent.end, margin = 5.dp)
+//                                    top.linkTo(name.top)
+//                                    bottom.linkTo(feelsLike.bottom)
+//                                    height = Dimension.fillToConstraints
+//                                })
                     }
                 }
             }
