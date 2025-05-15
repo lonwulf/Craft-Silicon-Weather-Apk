@@ -39,6 +39,7 @@
     - View (Compose UI) – Observes StateFlow from the ViewModel and renders UI accordingly.
 - Jetpack compose to build all screens and UI components, ensuring a responsive user experience with clean architecture and one-way data flow,
 - Koin for DI,
+- DataStore for caching data,
 - Retrofit HTTP client,
 - Moshi, JSON library for serializing and deserializing JSON
 - State management with stateflow. The app uses StateFlow to:
