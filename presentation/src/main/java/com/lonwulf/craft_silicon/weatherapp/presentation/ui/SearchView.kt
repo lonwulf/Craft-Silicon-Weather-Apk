@@ -52,7 +52,7 @@ fun SearchBar(
         if (searchQuery != lastSearchQuery) {
             lastSearchQuery = searchQuery
             isQuerying = true
-            delay(5000L)
+            delay(7000L)
             searchJob.value(searchQuery)
             isQuerying = false
         }

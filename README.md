@@ -1,12 +1,7 @@
 # _Project Setup Guide_
 
-## Prerequisites
-
-- Android Studio
-- Git
-
 ## Installation Steps
-- Clone the master branch
+- Clone the composeApp branch
 - Open in Android Studio
 
 ## Launch Android Studio
@@ -29,31 +24,45 @@
 
 ## Recommended Environment
 
-- Android Studio Meerkat or Hedgehog
+- Android Studio Meerkat or Narwhal
 - Gradle 8.0+
 - Kotlin 2.0
 
 ## Architecture and Components
 - Modular app structure (core, presentation and app modules)
+    - core module – Contains shared resources like data sources, utilities, and common extensions used across the app.
+    - app module – The main entry point (Application class), responsible for bootstrapping the app and combining all modules together.
+    - presentation module - Contains the UI components.
 - MVVM,
-- Jetpack compose,
-- DataStore for caching data,
+    - Model – Represents data and business rules (from repositories or use cases).
+    - ViewModel – Handles business logic, state management, and exposes observable data to the UI.
+    - View (Compose UI) – Observes StateFlow from the ViewModel and renders UI accordingly.
+- Jetpack compose to build all screens and UI components, ensuring a responsive user experience with clean architecture and one-way data flow,
 - Koin for DI,
-- Coil for image loading
+- Retrofit HTTP client,
+- Moshi, JSON library for serializing and deserializing JSON
+- State management with stateflow. The app uses StateFlow to:
+    - Emit and observe UI state changes from ViewModels to the UI.
+    - Handle data loading states (Loading, Success, Error) using a sealed ResultState class
 
 ## Screenshots
 
 ### Home Screen
-![Home Screen](./Screenshot_20241221_010904.png)
+![Home Screen](./Screenshot_20250516_014449.png)
+![Home Screen No Data](./Screenshot_20250516_020203.png)
 
-### History Screen
-![History Screen](./Screenshot_20241221_133735.png)
+### Forecast Screen
+![Forecast Screen](./Screenshot_20250516_020055.png)
 
 ### Settings Screen
-![Settings Screen](./Screenshot_20241221_133806.png)
+![Settings Screen](./Screenshot_20250516_020142.png)
 
 ### No Internet scenario
-![No internet](./Screenshot_20241221_140740.png)
+![No internet](./Screenshot_20250516_020820.png)
 
 ### Search Screen
-![Search Screen]()
+![Search Screen](./Screenshot_20250516_014602.png)
+![Search Screen Not searched](./Screenshot_20250516_014513.png)
+
+### Details Screen
+![Details Screen](./Screenshot_20250516_020123.png)

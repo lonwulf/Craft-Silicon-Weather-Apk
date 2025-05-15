@@ -11,10 +11,12 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
 import coil.compose.AsyncImagePainter
 import coil.compose.rememberAsyncImagePainter
 import coil.request.ImageRequest
 import coil.size.Size
+import com.lonwulf.craft_silicon.weatherapp.presentation.R
 
 
 @Composable
@@ -46,16 +48,13 @@ fun LoadImageFromUrl(
 
         when (painter.state) {
             is AsyncImagePainter.State.Loading -> CircularProgressIndicator(modifier.align(Alignment.Center))
-            is AsyncImagePainter.State.Error -> {
-                Image(
-                    painter = painter,
-                    contentDescription = null,
-                    modifier = modifier.fillMaxSize(),
-                    contentScale = contentScale
-                )
-            }
 
-            else -> {}
+            else -> Image(
+                painter = painterResource(R.drawable.default_weather_icn),
+                contentDescription = null,
+                modifier = modifier.fillMaxSize(),
+                contentScale = contentScale
+            )
         }
     }
 }

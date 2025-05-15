@@ -5,6 +5,7 @@ import androidx.lifecycle.viewModelScope
 import com.lonwulf.craft_silicon.weatherapp.core.util.GenericResultState
 import com.lonwulf.craft_silicon.weatherapp.domain.mapper.toWeatherPreferenceList
 import com.lonwulf.craft_silicon.weatherapp.domain.model.AppSettings
+import com.lonwulf.craft_silicon.weatherapp.domain.model.WeatherDetailsPreferences
 import com.lonwulf.craft_silicon.weatherapp.domain.model.WeatherModel
 import com.lonwulf.craft_silicon.weatherapp.domain.model.WeatherPreferences
 import com.lonwulf.craft_silicon.weatherapp.domain.usecase.FetchHistoryFromCacheUseCase
@@ -32,6 +33,9 @@ class SharedViewModel(
         get() = _weatherPreferencesList.asStateFlow()
     val appSettingsPreference
         get() = _appSettingsPreference.asStateFlow()
+    private var _detailsStateFlow = MutableStateFlow<List<WeatherDetailsPreferences>>(emptyList())
+    val detailsStateFlow
+        get() = _detailsStateFlow.asStateFlow()
 
     fun fetchWeatherForeCast(
         query: String
@@ -96,5 +100,9 @@ class SharedViewModel(
 
     private fun setAppSettingsResult(data: GenericResultState<AppSettings>) {
         _appSettingsPreference.value = data
+    }
+
+    fun setWeatherObject(list: List<WeatherDetailsPreferences>) {
+        _detailsStateFlow.value = list
     }
 }

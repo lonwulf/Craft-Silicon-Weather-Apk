@@ -26,6 +26,7 @@ mockitoKotlin = "5.4.0"
 coroutineTest = "1.9.0"
 composeJUnit = "1.7.6"
 navigation = "2.8.5"
+date-time= "0.6.2"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -63,7 +64,7 @@ coroutines-test = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-
 compose-junit-test = { group = "androidx.compose.ui", name = "ui-test-junit4", version.ref = "composeJUnit" }
 koin-test = {group = "io.insert-koin", name = "koin-test", version.ref = "koin"}
 navigation-test = {group ="androidx.navigation", name = "navigation-testing", version.ref = "navigation"}
-
+kotlin-date-time = {module ="org.jetbrains.kotlinx:kotlinx-datetime", version.ref = "date-time"}
 ##plugins
 kt-serialization = { module = "org.jetbrains.kotlin:kotlin-serialization", version.ref = "ktSerializationPlugin" }
 

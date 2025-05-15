@@ -43,6 +43,8 @@ import com.lonwulf.craft_silicon.weatherapp.presentation.ui.CircularProgressBar
 import com.lonwulf.craft_silicon.weatherapp.presentation.ui.SearchBar
 import com.lonwulf.craft_silicon.weatherapp.ui.theme.TextBlack
 import com.lonwulf.craft_silicon.weatherapp.ui.viewmodel.SharedViewModel
+import com.lonwulf.craft_silicon.weatherapp.util.convertToLocalTime
+import com.lonwulf.craft_silicon.weatherapp.util.timezoneToUtcOffset
 import org.koin.androidx.compose.navigation.koinNavViewModel
 
 class HomeScreenComposable : NavComposable {
@@ -89,7 +91,7 @@ fun HomeScreen(
 
     ConstraintLayout(modifier = modifier.fillMaxSize()) {
         val (searchField, name, placeholderTxt, img, country, arrowIcn, weatherTile) = createRefs()
-        val horizontalGuide = createGuidelineFromBottom(0.4f)
+        val horizontalGuide = createGuidelineFromBottom(0.5f)
 
         CircularProgressBar(isLoading)
 
@@ -119,17 +121,6 @@ fun HomeScreen(
 
 
         dataToDisplay.takeIf { it.name.isNotEmpty() }?.let {
-//            LoadImageFromUrl(
-//                url = "https:${it.iconUrl}",
-//                ctx = LocalContext.current,
-//                modifier = modifier
-//                    .size(200.dp)
-//                    .constrainAs(img) {
-//                        end.linkTo(parent.end)
-//                        start.linkTo(parent.start)
-//                        bottom.linkTo(country.top, 20.dp)
-//                    })
-
             Text(
                 text = it.country,
                 style = MaterialTheme.typography.headlineLarge,
@@ -178,14 +169,24 @@ fun HomeScreen(
                 ) {
                     WeatherItem(
                         label = stringResource(R.string.timezone),
-                        value = it.timezone.toString().plus("%")
+                        value = "${timezoneToUtcOffset(it.timezone)}"
                     )
                     WeatherItem(
-                        label = stringResource(R.string.sunrise), value = it.sunrise.toString()
+                        label = stringResource(R.string.sunrise), value = "${
+                            convertToLocalTime(
+                                timestamp = it.sunrise,
+                                timezoneOffsetSeconds = it.timezone
+                            )
+                        }"
                     )
                     WeatherItem(
                         label = stringResource(R.string.sunset),
-                        value = it.sunset.toString().plus("°")
+                        value = "${
+                            convertToLocalTime(
+                                timestamp = it.sunset,
+                                timezoneOffsetSeconds = it.timezone
+                            )
+                        }"
                     )
                 }
             }

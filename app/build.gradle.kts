@@ -69,6 +69,7 @@ dependencies {
     implementation(libs.dataStore)
     implementation(libs.kotlin.collections)
     implementation(libs.kotlin.serialization)
+    implementation(libs.kotlin.date.time)
 
     testImplementation(libs.junit)
     testImplementation(libs.mockito.core)

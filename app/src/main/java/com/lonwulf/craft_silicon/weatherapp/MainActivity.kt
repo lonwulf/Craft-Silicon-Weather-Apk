@@ -50,10 +50,11 @@ import com.lonwulf.craft_silicon.weatherapp.core.util.NetworkMonitor
 import com.lonwulf.craft_silicon.weatherapp.navigation.Destinations
 import com.lonwulf.craft_silicon.weatherapp.navigation.NavGraph
 import com.lonwulf.craft_silicon.weatherapp.navigation.TopLevelDestinations
-import com.lonwulf.craft_silicon.weatherapp.ui.screens.HistoryScreenComposable
+import com.lonwulf.craft_silicon.weatherapp.ui.screens.ForecastScreenComposable
 import com.lonwulf.craft_silicon.weatherapp.ui.screens.HomeScreenComposable
 import com.lonwulf.craft_silicon.weatherapp.ui.screens.SearchScreenComposable
 import com.lonwulf.craft_silicon.weatherapp.ui.screens.SettingsScreenComposable
+import com.lonwulf.craft_silicon.weatherapp.ui.screens.WeatherDetailsScreenComposable
 import com.lonwulf.craft_silicon.weatherapp.ui.theme.BottomBarBgGray
 import com.lonwulf.craft_silicon.weatherapp.ui.theme.BottomBarContentColor
 import com.lonwulf.craft_silicon.weatherapp.ui.theme.BottomBarSelectedColor
@@ -68,7 +69,7 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContent {
-            WeatherAppTheme {
+            WeatherAppTheme(darkTheme = false) {
                 val navController = rememberNavController()
                 val navStackBackEntry by navController.currentBackStackEntryAsState()
                 val currentDestination = navStackBackEntry?.destination
@@ -76,20 +77,24 @@ class MainActivity : ComponentActivity() {
                 val isConnected by networkMonitor.networkChangeEvent.collectAsState()
 
                 val hideAppBarInScreens = listOf(
-                    Destinations.SearchScreen.route
+                    Destinations.SearchScreen.route,
+                    Destinations.WeatherDetailsScreen.route
                 )
                 val showBottomBar = currentDestination?.route !in hideAppBarInScreens
 
                 Scaffold(snackbarHost = { SnackbarHost(snackBarHostState) }, topBar = {
                     Column {
-                        val title =
-                            if (currentDestination?.route == TopLevelDestinations.HomeScreen.route) "craft_silicon Weather App" else currentDestination?.route
-                                ?: ""
-                        Toolbar(
-                            title = title,
-                            navHostController = navController,
-                            currentDestination = currentDestination
-                        )
+                        if (showBottomBar) {
+                            val title =
+                                if (currentDestination?.route == TopLevelDestinations.HomeScreen.route) "Weather App" else currentDestination?.route
+                                    ?: ""
+                            Toolbar(
+                                title = title,
+                                navHostController = navController,
+                                currentDestination = currentDestination
+                            )
+                        }
+
                         if (isConnected.not()) {
                             ConnectivityStrip()
                         }
@@ -110,8 +115,9 @@ class MainActivity : ComponentActivity() {
                     ) {
                         val composables = mapOf(
                             Destinations.SearchScreen.route to SearchScreenComposable(),
+                            Destinations.WeatherDetailsScreen.route to WeatherDetailsScreenComposable(),
                             TopLevelDestinations.HomeScreen.route to HomeScreenComposable(),
-                            TopLevelDestinations.HistoryScreen.route to HistoryScreenComposable(),
+                            TopLevelDestinations.HistoryScreen.route to ForecastScreenComposable(),
                             TopLevelDestinations.SettingsScreen.route to SettingsScreenComposable(),
                         )
                         NavGraph(

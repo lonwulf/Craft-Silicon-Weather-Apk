@@ -10,9 +10,10 @@ import androidx.compose.ui.graphics.vector.ImageVector
 
 object DestinationConstants {
     const val HOME_SCREEN = "Home"
-    const val CACHED_WEATHER_SCREEN = "History"
+    const val CACHED_WEATHER_SCREEN = "Forecast"
     const val SETTINGS_SCREEN = "Settings"
     const val SEARCH_RESULT_SCREEN = "Search"
+    const val WEATHER_DETAILS_SCREEN = "Details"
 }
 
 sealed class TopLevelDestinations(val route: String, val icon: ImageVector, val title: String) {
@@ -22,7 +23,7 @@ sealed class TopLevelDestinations(val route: String, val icon: ImageVector, val 
     object HistoryScreen : TopLevelDestinations(
         DestinationConstants.CACHED_WEATHER_SCREEN,
         Icons.Outlined.FavoriteBorder,
-        "History"
+        "Forecast"
     )
 
     object SettingsScreen :
@@ -36,4 +37,5 @@ sealed class TopLevelDestinations(val route: String, val icon: ImageVector, val 
 
 sealed class Destinations(val route: String) {
     object SearchScreen : Destinations(DestinationConstants.SEARCH_RESULT_SCREEN)
+    object WeatherDetailsScreen : Destinations(DestinationConstants.WEATHER_DETAILS_SCREEN)
 }

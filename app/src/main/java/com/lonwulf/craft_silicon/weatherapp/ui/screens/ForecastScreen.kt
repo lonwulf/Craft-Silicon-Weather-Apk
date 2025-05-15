@@ -1,6 +1,7 @@
 package com.lonwulf.craft_silicon.weatherapp.ui.screens
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
@@ -24,6 +25,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.constraintlayout.compose.ConstraintLayout
@@ -31,27 +33,30 @@ import androidx.navigation.NavHostController
 import com.lonwulf.craft_silicon.weatherapp.R
 import com.lonwulf.craft_silicon.weatherapp.core.util.GenericResultState
 import com.lonwulf.craft_silicon.weatherapp.domain.model.AppSettings
+import com.lonwulf.craft_silicon.weatherapp.navigation.Destinations
 import com.lonwulf.craft_silicon.weatherapp.navigation.NavComposable
 import com.lonwulf.craft_silicon.weatherapp.navigation.TopLevelDestinations
 import com.lonwulf.craft_silicon.weatherapp.ui.theme.BottomBarBgGray
 import com.lonwulf.craft_silicon.weatherapp.ui.theme.BottomBarSelectedColor
 import com.lonwulf.craft_silicon.weatherapp.ui.theme.TextBlack
 import com.lonwulf.craft_silicon.weatherapp.ui.viewmodel.SharedViewModel
+import com.lonwulf.craft_silicon.weatherapp.util.formatPressure
+import com.lonwulf.craft_silicon.weatherapp.util.formatVisibility
+import com.lonwulf.craft_silicon.weatherapp.util.formatWindSpeed
 import org.koin.androidx.compose.navigation.koinNavViewModel
 
-class HistoryScreenComposable : NavComposable {
+class ForecastScreenComposable : NavComposable {
     @Composable
     override fun Composable(
         navHostController: NavHostController,
         snackbarHostState: SnackbarHostState
     ) {
-        HistoryScreen(navHostController = navHostController)
+        ForecastScreen(navHostController = navHostController)
     }
-
 }
 
 @Composable
-fun HistoryScreen(modifier: Modifier = Modifier, navHostController: NavHostController) {
+fun ForecastScreen(modifier: Modifier = Modifier, navHostController: NavHostController) {
     val parentEntry =
         remember { navHostController.getBackStackEntry(TopLevelDestinations.HomeScreen.route) }
     val vm = koinNavViewModel<SharedViewModel>(viewModelStoreOwner = parentEntry)
@@ -85,7 +90,11 @@ fun HistoryScreen(modifier: Modifier = Modifier, navHostController: NavHostContr
                     modifier = modifier
                         .fillMaxWidth()
                         .wrapContentHeight()
-                        .padding(10.dp),
+                        .padding(10.dp)
+                        .clickable {
+                            vm.setWeatherObject(prefs.weatherDetails.toList())
+                            navHostController.navigate(Destinations.WeatherDetailsScreen.route)
+                        },
                     elevation = CardDefaults.elevatedCardElevation(8.dp),
                     shape = RoundedCornerShape(5.dp),
                     colors = CardDefaults.elevatedCardColors(
@@ -100,36 +109,73 @@ fun HistoryScreen(modifier: Modifier = Modifier, navHostController: NavHostContr
                             .fillMaxWidth()
                             .wrapContentHeight()
                     ) {
-                        val (name, temp, feelsLike, img) = createRefs()
+                        val (humidity, feelsLike, windSpeed, visibility, minTemp, maxTemp, pressure) = createRefs()
                         Text(
-                            text = "Humidity: ${prefs.humidity}",
-                            modifier = modifier.constrainAs(name) {
-                                top.linkTo(parent.top, margin = 10.dp)
+                            text = "Humidity: ${prefs.humidity}%",
+                            style = MaterialTheme.typography.bodyLarge.copy(
+                                color = TextBlack
+                            ),
+                            modifier = modifier.constrainAs(humidity) {
+                                top.linkTo(parent.top)
                                 start.linkTo(parent.start, margin = 20.dp)
                             })
-                        Text(
-                            text = "Temperature: ${prefs.temp}°",
-                            modifier = modifier.constrainAs(temp) {
-                                top.linkTo(name.bottom, margin = 10.dp)
-                                start.linkTo(parent.start, margin = 20.dp)
-                            })
+
                         Text(
                             text = "Feels Like: ${prefs.feelsLike}°",
+                            style = MaterialTheme.typography.bodyLarge.copy(
+                                color = TextBlack
+                            ),
                             modifier = modifier.constrainAs(feelsLike) {
-                                top.linkTo(temp.bottom, margin = 10.dp)
+                                top.linkTo(humidity.bottom, margin = 10.dp)
                                 start.linkTo(parent.start, margin = 20.dp)
                             })
-//                        LoadImageFromUrl(
-//                            url = "https:${prefs.iconUrl}",
-//                            ctx = LocalContext.current,
-//                            modifier = modifier
-//                                .width(100.dp)
-//                                .constrainAs(img) {
-//                                    end.linkTo(parent.end, margin = 5.dp)
-//                                    top.linkTo(name.top)
-//                                    bottom.linkTo(feelsLike.bottom)
-//                                    height = Dimension.fillToConstraints
-//                                })
+                        Text(
+                            style = MaterialTheme.typography.bodyLarge.copy(
+                                color = TextBlack
+                            ),
+                            text = "Visibility: ${formatVisibility(prefs.visibility)}",
+                            modifier = modifier.constrainAs(visibility) {
+                                top.linkTo(feelsLike.bottom, margin = 10.dp)
+                                start.linkTo(parent.start, margin = 20.dp)
+                            })
+                        Text(
+                            style = MaterialTheme.typography.bodyLarge.copy(
+                                color = TextBlack
+                            ),
+                            text = "Pressure: ${formatPressure(prefs.pressure)}",
+                            modifier = modifier.constrainAs(pressure) {
+                                top.linkTo(visibility.bottom, margin = 10.dp)
+                                start.linkTo(parent.start, margin = 20.dp)
+                            })
+                        Text(
+                            style = MaterialTheme.typography.bodyLarge.copy(
+                                color = TextBlack
+                            ),
+                            text = "Wind speed: ${formatWindSpeed(prefs.windSpeed)}",
+                            modifier = modifier.constrainAs(windSpeed) {
+                                top.linkTo(pressure.bottom, margin = 10.dp)
+                                start.linkTo(parent.start, margin = 20.dp)
+                            })
+                        Text(
+                            style = MaterialTheme.typography.bodyLarge.copy(
+                                color = TextBlack
+                            ),
+                            text = "${prefs.tempMax}°C",
+                            color = Color(0xFFE53935),
+                            modifier = modifier.constrainAs(maxTemp) {
+                                top.linkTo(humidity.top)
+                                end.linkTo(parent.end, margin = 20.dp)
+                            })
+                        Text(
+                            style = MaterialTheme.typography.bodyLarge.copy(
+                                color = TextBlack
+                            ),
+                            text = "${prefs.tempMin}°C",
+                            color = Color(0xFF1E88E5),
+                            modifier = modifier.constrainAs(minTemp) {
+                                top.linkTo(maxTemp.bottom, margin = 10.dp)
+                                end.linkTo(parent.end, margin = 20.dp)
+                            })
                     }
                 }
             }
