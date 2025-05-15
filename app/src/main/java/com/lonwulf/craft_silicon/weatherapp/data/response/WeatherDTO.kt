@@ -17,7 +17,7 @@ data class WeatherDTO(
         @Json(name = "clouds") var clouds: CloudsDTO? = null,
         @Json(name = "wind") var wind: WindDTO? = null,
         @Json(name = "visibility") var visibility: Int = 0,
-        @Json(name = "pop") var pop: Int = 0,
+        @Json(name = "pop") var pop: Double = 0.0,
         @Json(name = "sys") var sys: SysDTO? = null,
         @Json(name = "dt_txt") var dt_txt: String = "",
         @Json(name = "rain") var rain: RainDTO? = null
@@ -56,7 +56,7 @@ data class WeatherDTO(
             @Json(name = "sea_level") var sea_level: Int = 0,
             @Json(name = "grnd_level") var grnd_level: Int = 0,
             @Json(name = "humidity") var humidity: Int = 0,
-            @Json(name = "temp_kf") var temp_kf: Int = 0
+            @Json(name = "temp_kf") var temp_kf: Double = 0.0
         )
     }
 

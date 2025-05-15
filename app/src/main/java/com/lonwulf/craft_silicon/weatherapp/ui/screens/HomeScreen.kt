@@ -118,7 +118,7 @@ fun HomeScreen(
             }
 
 
-        dataToDisplay.takeIf { it != null }?.let {
+        dataToDisplay.takeIf { it.name.isNotEmpty() }?.let {
 //            LoadImageFromUrl(
 //                url = "https:${it.iconUrl}",
 //                ctx = LocalContext.current,

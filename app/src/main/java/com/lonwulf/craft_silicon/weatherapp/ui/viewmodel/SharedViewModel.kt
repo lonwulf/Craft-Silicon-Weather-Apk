@@ -5,12 +5,10 @@ import androidx.lifecycle.viewModelScope
 import com.lonwulf.craft_silicon.weatherapp.core.util.GenericResultState
 import com.lonwulf.craft_silicon.weatherapp.domain.mapper.toWeatherPreferenceList
 import com.lonwulf.craft_silicon.weatherapp.domain.model.AppSettings
-import com.lonwulf.craft_silicon.weatherapp.domain.model.WeatherHistoryPreferences
 import com.lonwulf.craft_silicon.weatherapp.domain.model.WeatherModel
 import com.lonwulf.craft_silicon.weatherapp.domain.model.WeatherPreferences
 import com.lonwulf.craft_silicon.weatherapp.domain.usecase.FetchHistoryFromCacheUseCase
 import com.lonwulf.craft_silicon.weatherapp.domain.usecase.WeatherForeCastUseCase
-import kotlinx.collections.immutable.toPersistentList
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -36,10 +34,9 @@ class SharedViewModel(
         get() = _appSettingsPreference.asStateFlow()
 
     fun fetchWeatherForeCast(
-        latitude: Double,
-        longitude: Double
+        query: String
     ) = viewModelScope.launch(Dispatchers.IO) {
-        weatherForeCastUseCase(latitude = latitude, longitude = longitude).onStart {
+        weatherForeCastUseCase(query = query).onStart {
             setWeatherForeCastApiResult(GenericResultState.Loading)
         }
             .flowOn(Dispatchers.IO).collect { result ->
@@ -74,7 +71,7 @@ class SharedViewModel(
 
     fun addWeatherHistory(model: WeatherModel) = viewModelScope.launch(Dispatchers.IO) {
         fetchHistoryFromCacheUseCase.addHistory(
-            WeatherHistoryPreferences(
+            AppSettings(
                 name = model.name,
                 lat = model.lat,
                 lon = model.lon,
@@ -83,7 +80,7 @@ class SharedViewModel(
                 timezone = model.timezone,
                 sunset = model.sunset,
                 sunrise = model.sunrise,
-                weather = model.weatherList.toWeatherPreferenceList()
+                history = model.weatherList.toWeatherPreferenceList()
             )
         )
     }
@@ -96,6 +93,7 @@ class SharedViewModel(
     private fun setWeatherHistoryResult(data: GenericResultState<List<WeatherPreferences>>) {
         _weatherPreferencesList.value = data
     }
+
     private fun setAppSettingsResult(data: GenericResultState<AppSettings>) {
         _appSettingsPreference.value = data
     }

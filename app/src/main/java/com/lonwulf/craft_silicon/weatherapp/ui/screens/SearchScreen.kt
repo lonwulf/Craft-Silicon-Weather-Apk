@@ -1,5 +1,6 @@
 package com.lonwulf.craft_silicon.weatherapp.ui.screens
 
+import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -26,7 +27,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.constraintlayout.compose.ConstraintLayout
@@ -36,7 +36,6 @@ import com.lonwulf.craft_silicon.weatherapp.core.util.GenericResultState
 import com.lonwulf.craft_silicon.weatherapp.domain.model.WeatherModel
 import com.lonwulf.craft_silicon.weatherapp.navigation.NavComposable
 import com.lonwulf.craft_silicon.weatherapp.navigation.TopLevelDestinations
-import com.lonwulf.craft_silicon.weatherapp.presentation.ui.LoadImageFromUrl
 import com.lonwulf.craft_silicon.weatherapp.presentation.ui.SearchBar
 import com.lonwulf.craft_silicon.weatherapp.ui.theme.BottomBarBgGray
 import com.lonwulf.craft_silicon.weatherapp.ui.theme.TextBlack
@@ -75,6 +74,7 @@ fun SearchScreen(
 
             is GenericResultState.Empty -> {}
             is GenericResultState.Error -> scope.launch {
+                Log.e("Err:   ", (apiState as GenericResultState.Error).msg.toString())
                 snackbarHostState.showSnackbar(
                     message = (apiState as GenericResultState.Error).msg ?: "something went wrong",
                     duration = SnackbarDuration.Short
@@ -99,7 +99,7 @@ fun SearchScreen(
         }, onClick = {
 
         }, onSearch = {
-            vm.fetchWeatherForeCast(latitude = 44.34, longitude = 10.99)
+            vm.fetchWeatherForeCast(query = it)
         })
 
         weatherObject.takeIf { it != null }?.let { model ->

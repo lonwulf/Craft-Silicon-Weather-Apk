@@ -10,12 +10,11 @@ import kotlinx.coroutines.flow.flow
 class WeatherForeCastUseCase(private val repository: AppRepository) {
 
     operator fun invoke(
-        latitude: Double,
-        longitude: Double
+        query:String
     ): Flow<GenericUseCaseResult<WeatherModel?>> =
         flow {
             when (val response =
-                repository.getWeatherForeCast(latitude = latitude, longitude = longitude)) {
+                repository.getWeatherForeCast(query = query)) {
                 is APIResult.Loading -> APIResult.Loading
                 is APIResult.Success -> {
                     val result =

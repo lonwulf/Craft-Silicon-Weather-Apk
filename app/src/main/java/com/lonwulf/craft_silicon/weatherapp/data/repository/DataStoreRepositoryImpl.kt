@@ -45,7 +45,17 @@ class DataStoreRepositoryImpl(private val context: Context) : DataStoreRepositor
 
     override suspend fun clearWeatherHistory() {
         context.weatherHistoryDataStore.updateData { preferences ->
-            preferences.copy(history = preferences.history.clear())
+            preferences.copy(
+                name = "",
+                lat = 0.0,
+                lon = 0.0,
+                country = "",
+                population = 0,
+                timezone = 0,
+                sunset = 0,
+                sunrise = 0,
+                history = preferences.history.clear()
+            )
         }
     }
 }

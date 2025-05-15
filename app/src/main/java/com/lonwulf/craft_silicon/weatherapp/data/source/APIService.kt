@@ -7,8 +7,7 @@ import retrofit2.http.Query
 interface APIService {
     @GET("forecast")
     suspend fun getWeatherForeCast(
-        @Query("lat") latitude: Double,
-        @Query("lon") longitude: Double,
+        @Query("q") query: String,
         @Query("appid") appid: String
     ): WeatherDTO
 }

@@ -5,8 +5,7 @@ import com.lonwulf.craft_silicon.weatherapp.domain.model.WeatherModel
 
 interface AppRepository {
     suspend fun getWeatherForeCast(
-        latitude: Double,
-        longitude: Double
+        query: String
     ): APIResult<WeatherModel>
 
 }

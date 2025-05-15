@@ -38,7 +38,7 @@ private fun Array<WeatherDTO.WeatherListDTO>.toWeatherList(): List<WeatherModel.
                     seaLevel = it.main?.sea_level ?: 0,
                     groundLevel = it.main?.grnd_level ?: 0,
                     humidity = it.main?.humidity ?: 0,
-                    tempKf = it.main?.temp_kf ?: 0,
+                    tempKf = it.main?.temp_kf ?: 0.0,
                     clouds = it.clouds?.all ?: 0,
                     windGust = it.wind?.gust ?: 0.0,
                     windDeg = it.wind?.deg ?: 0,

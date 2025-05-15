@@ -9,12 +9,10 @@ import kotlinx.coroutines.CoroutineDispatcher
 class AppRemoteDataSource(private val apiService: APIService) : RemoteDataSource() {
     suspend fun fetchWeatherForeCast(
         dispatcher: CoroutineDispatcher,
-        latitude:Double,
-        longitude:Double
+        query:String
     ): APIResult<WeatherDTO> = safeApiCall(dispatcher) {
         apiService.getWeatherForeCast(
-            latitude = latitude,
-            longitude = longitude,
+            query = query,
             appid = BuildConfig.WEATHER_API_KEY,
         )
     }
